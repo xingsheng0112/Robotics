@@ -4,6 +4,8 @@
 ### HW6
 Deadline: 4/13
 ---
+## 影片連結
+https://reurl.cc/R6VX5n 
 ## 題目
 請實踐從continuous-time的state space轉換到discrete-time的形式 \
 作法可使用數值積分的方式實現，積分得出狀態後  \
