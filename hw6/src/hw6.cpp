@@ -53,9 +53,9 @@ int main(int argc, char **argv)
 		x1. = x2
 		x2. = -k/M*x1 - b/M*x2 + u
 		*/
-		x1.current = x1.last + x2.last * dt;
 		x2.current = x2.last + ( u / M - k / M * x1.last - b / M * x2.last ) * dt;
-		
+		x1.current = x1.last + x2.current * dt;
+
 		x1.last = x1.current;
 		x2.last = x2.current;
 		
