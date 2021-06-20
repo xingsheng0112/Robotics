@@ -56,8 +56,8 @@ https://reurl.cc/9rRZoj
 (手機錄製)  
 https://reurl.cc/qg0mzE  
 
-2. Checking data
-https://reurl.cc/bXlRZl
+2. Checking data  
+https://reurl.cc/bXlRZl  
 
 
 
