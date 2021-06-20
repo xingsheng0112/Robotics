@@ -78,7 +78,7 @@ void ukf::predict(){
   P_.setZero(x_size,x_size);
 
   for(int i=0 ; i<x_sigmavector_size ;i++){
-    P_+= w_c(i) * (x_sigmavector.col(i) - x_hat) * ((x_sigmavector.col(i) - x_hat).transpose());
+    P_+= w_c(i) * (x_sigmavector.col(i) - x_hat) * (x_sigmavector.col(i) - x_hat).transpose();
   }
 
   //add process noise covariance
@@ -123,11 +123,11 @@ void ukf::correct(Eigen::VectorXd measure){
       P_xy += w_c(i) * err_x * err_y.transpose();
     }
 
-    Kalman_gain = P_xy * (P_yy.inverse());
+    Kalman_gain = P_xy * P_yy.inverse();
 
     // correct states and covariance
     x = x_hat + Kalman_gain * (y - y_hat);
-    P = P_ - Kalman_gain * P_yy * (Kalman_gain.transpose());
+    P = P_ - Kalman_gain * P_yy * Kalman_gain.transpose();
 }
 
 Eigen::MatrixXd ukf::dynamics(Eigen::MatrixXd sigma_state){

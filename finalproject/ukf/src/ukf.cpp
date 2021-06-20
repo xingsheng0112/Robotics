@@ -12,23 +12,23 @@ ukf::ukf(int state_size , int measurement_size){
   L = x_size;
   x_sigmavector_size = 2 * L + 1;
 
-  x.setZero(x_size);//12*1
-  y.setZero(y_size);//6*1
+  x.setZero(x_size); //12*1
+  y.setZero(y_size); //6*1
 
-  x_hat.setZero(x_size);//12*1
-  y_hat.setZero(y_size);//6*1
+  x_hat.setZero(x_size); //12*1
+  y_hat.setZero(y_size); //6*1
 
   x_a.setZero(x_size+x_size+y_size);//30*1
 
-  x_sigmavector.setZero(x_size,x_sigmavector_size);//12*25
-  y_sigmavector.setZero(x_sigmavector_size,y_size);//25*6
+  x_sigmavector.setZero(x_size,x_sigmavector_size); //12*25
+  y_sigmavector.setZero(x_sigmavector_size,y_size); //25*6
 
   H.setZero(y_size,x_size);  // measurement matrix //6*12
 
-  y = H*x;
+  y = H*x; //6*1
 
-  w_c.setZero(x_sigmavector_size);//25*1
-  w_m.setZero(x_sigmavector_size);//25*1
+  w_c.setZero(x_sigmavector_size); //25*1
+  w_m.setZero(x_sigmavector_size); //25*1
 
   w_c(0) = lambda / ((L + lambda) + (1 - alpha * alpha + beta));
   w_m(0) = lambda / (L + lambda);
@@ -44,9 +44,9 @@ ukf::ukf(int state_size , int measurement_size){
   R = 5e-4*Eigen::MatrixXd::Identity(y_size, y_size); //6*6
   P = 1e-3*Eigen::MatrixXd::Identity(x_size, x_size); //12*12
 
-  P_.setZero(x_size,x_size); //12*12
-  P_yy.setZero(y_size,y_size);  //6*6
-  P_xy.setZero(x_size,y_size);  //12*6
+  P_.setZero(x_size,x_size);   //12*12
+  P_yy.setZero(y_size,y_size); //6*6
+  P_xy.setZero(x_size,y_size); //12*6
 
   last_quat << 0,0,0,1;
 }
@@ -56,7 +56,7 @@ void ukf::predict(){
 
   //find sigma point
   P=(lambda+L)*P;
-  Eigen::MatrixXd M = (P).llt().matrixL();
+  Eigen::MatrixXd M = (P).llt().matrixL(); //Cholesky decomposition
 
   x_sigmavector.setZero();
   x_sigmavector.col(0) = x;
@@ -68,7 +68,7 @@ void ukf::predict(){
   }
 
   // process model
-  x_sigmavector = dynamics(x_sigmavector);//12*25
+  x_sigmavector = dynamics(x_sigmavector); //12*25
 
   //x_hat (mean)
   x_hat.setZero(x_size);   //initialize x_hat
@@ -78,16 +78,16 @@ void ukf::predict(){
   }
 
   //covariance
-  P_.setZero(x_size,x_size);
+  P_.setZero(x_size,x_size); //12*12
 
   for(int i=0 ; i<x_sigmavector_size ;i++){
-    P_ += w_c(i) * (x_sigmavector.col(i) - x_hat) * ((x_sigmavector.col(i) - x_hat).transpose());
+    P_ += w_c(i) * (x_sigmavector.col(i) - x_hat) * (x_sigmavector.col(i) - x_hat).transpose();
   }
   //add process noise covariance
   P_ += Q;
 
   // measurement model
-  y_sigmavector = H * x_sigmavector;
+  y_sigmavector = H * x_sigmavector; //6*25
 
   //y_hat (mean)
   y_hat.setZero(y_size);
@@ -139,8 +139,8 @@ void ukf::correct(Eigen::VectorXd measure){
   //----------------
   y=measure;
 
-  P_yy.setZero(y_size,y_size);
-  P_xy.setZero(x_size,y_size);
+  P_yy.setZero(y_size,y_size); //6*6
+  P_xy.setZero(x_size,y_size); //12*6
 
   for(int i=0;i<x_sigmavector_size;i++){
     Eigen::MatrixXd err;
@@ -161,10 +161,10 @@ void ukf::correct(Eigen::VectorXd measure){
     P_xy += w_c(i) * x_err * y_err.transpose();
   }
 
-  Kalman_gain = P_xy * (P_yy.inverse());
+  Kalman_gain = P_xy * P_yy.inverse(); //12*6
 
   // correct states and covariance
-  x = x_hat +Kalman_gain * (y - y_hat);
+  x = x_hat + Kalman_gain * (y - y_hat);
   P = P_ - Kalman_gain * P_yy * (Kalman_gain.transpose());
 
   //----------------
